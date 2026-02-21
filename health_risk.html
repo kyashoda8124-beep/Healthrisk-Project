@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Smart HealthRisk Prediction — Login</title>
+  <style>
+    /* ===== Global ===== */
+    :root{
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --text:#0f1724;
+      --accent:#0ea5a4;
+      --accent-2:#2563eb;
+      --good:#16a34a;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --glass: rgba(14,165,164,0.08);
+      --radius:12px;
+      --shadow: 0 6px 20px rgba(18,24,38,0.08);
+      --card-padding:18px;
+      --max-width:1200px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#0f1724,#081026);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--text);-webkit-font-smoothing:antialiased}
+    a{color:var(--accent-2)}
+    button{font-family:inherit}
+
+    /* ===== Animated login background ===== */
+    .login-bg{
+      position:fixed;inset:0;z-index:0;overflow:hidden;
+      background:linear-gradient(135deg,#0f1724,#02203b 30%, #072b4a 60%, #0b3a55 100%);
+      display:grid;place-items:center;
+    }
+    .bg-shape{
+      position:absolute; border-radius:50%; filter:blur(80px); opacity:0.35;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+    .bg-shape.s1{width:520px;height:520px;left:-120px;top:-80px;background:radial-gradient(circle at 20% 20%, #2563eb,#0ea5a4);}
+    .bg-shape.s2{width:420px;height:420px;right:-100px;bottom:-80px;background:radial-gradient(circle at 80% 80%, #7c3aed,#2563eb);animation-duration:16s}
+    .bg-shape.s3{width:260px;height:260px;left:30%;top:60%;background:radial-gradient(circle at 40% 40%, #06b6d4,#7dd3fc);animation-duration:10s;opacity:0.22}
+    @keyframes drift{0%{transform:translateY(0) scale(1)}100%{transform:translateY(-40px) scale(1.06)}}
+
+    /* ===== Login card ===== */
+    .login-wrap{position:relative;z-index:2;padding:32px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));backdrop-filter:blur(6px);box-shadow:0 12px 40px rgba(2,6,23,0.6);width:380px;max-width:92%}
+    .login-logo{display:flex;gap:12px;align-items:center;color:white;margin-bottom:6px}
+    .login-logo .badge{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#10b981,#2563eb);display:grid;place-items:center;font-weight:800;color:white;font-size:18px;box-shadow:0 8px 30px rgba(37,99,235,0.18)}
+    .login-title{font-size:20px;font-weight:800;color:white;margin:0}
+    .login-sub{color:rgba(255,255,255,0.8);font-size:13px;margin-top:6px}
+
+    .field{margin-top:12px}
+    label{display:block;font-size:13px;color:rgba(255,255,255,0.85);margin-bottom:8px}
+    input[type="text"],input[type="password"]{width:100%;padding:12px;border-radius:10px;border:none;background:rgba(255,255,255,0.06);color:white;font-size:14px}
+    .login-actions{display:flex;gap:8px;margin-top:14px;align-items:center}
+    .btn-primary{background:#10b981;color:white;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.08);color:white;padding:10px 12px;border-radius:10px;cursor:pointer}
+
+    .small{font-size:12px;color:rgba(255,255,255,0.72);margin-top:8px}
+
+    /* ===== Container for dashboard (hidden until login) ===== */
+    #appContainer{display:none;min-height:100vh;background:var(--bg);padding:24px 0}
+
+    /* ===== Dashboard styles kept from original (light card look) ===== */
+    .app{
+      max-width:var(--max-width);
+      margin:24px auto;
+      display:grid;
+      grid-template-columns:260px 1fr;
+      gap:20px;
+      padding:18px;
+      z-index:3;
+    }
+    @media (max-width:980px){
+      .app{grid-template-columns:1fr; padding:12px}
+    }
+    .sidebar{
+      background:var(--card);
+      padding:18px;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      height:fit-content;
+      position:sticky; top:24px;
+    }
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{
+      width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent-2),var(--accent));
+      display:grid;place-items:center;color:white;font-weight:700;box-shadow:0 6px 18px rgba(37,99,235,0.12)
+    }
+    .brand h3{margin:0;font-size:16px}
+    .nav{margin-top:18px;display:flex;flex-direction:column;gap:8px}
+    .nav button{
+      background:transparent;border:none;text-align:left;padding:10px;border-radius:10px;color:var(--text);cursor:pointer;font-weight:600;
+      display:flex;align-items:center;gap:10px;font-size:14px
+    }
+    .nav button.active{background:var(--glass);box-shadow:inset 0 0 0 1px rgba(14,165,164,0.06)}
+    .small-muted{font-size:12px;color:var(--muted);margin-top:10px}
+    .sidebar .meta{margin-top:18px;font-size:13px;color:var(--muted)}
+    .sidebar .actions{display:flex;gap:8px;margin-top:12px}
+
+    .main{display:flex;flex-direction:column;gap:18px;}
+    .top-row{display:flex;gap:18px;align-items:stretch}
+    @media (max-width:980px){ .top-row{flex-direction:column} }
+
+    .card{
+      background:var(--card);padding:var(--card-padding);border-radius:var(--radius);box-shadow:var(--shadow)
+    }
+
+    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    @media (max-width:720px){ .form-grid{grid-template-columns:1fr} }
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type="number"],select{width:100%;padding:10px;border-radius:10px;border:1px solid #e6eef8;background:transparent;font-size:15px;color:var(--text)}
+    .controls{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+    .btn{background:var(--accent-2);color:white;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+    .btn.ghost{background:transparent;border:1px solid #e6eef8;color:var(--text)}
+    .btn.warn{background:var(--warn);color:white}
+
+    .metrics{display:flex;gap:12px}
+    @media (max-width:720px){ .metrics{flex-direction:column} }
+    .metric{
+      flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg,#ffffff,#f8fafc);
+      box-shadow:0 4px 10px rgba(12,18,30,0.04);display:flex;flex-direction:column;gap:6px
+    }
+    .metric .label{font-size:12px;color:var(--muted)}
+    .metric .value{font-size:20px;font-weight:800;color:var(--accent-2)}
+
+    .score-area{display:flex;gap:18px;align-items:center}
+    .gauge-box{width:220px;height:220px;display:grid;place-items:center}
+    .score-details{flex:1}
+    .score-number{font-size:26px;font-weight:800}
+    .score-category{font-weight:700;margin-top:6px}
+
+    .factors{display:grid;gap:10px;margin-top:8px}
+    .factor{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .factor-name{font-weight:600;color:var(--muted);width:40%}
+    .progress-track{height:12px;background:#eef3f8;border-radius:999px;flex:1;overflow:hidden;border:1px solid #eef6fb}
+    .progress-fill{height:100%;width:0%;border-radius:999px}
+
+    .list .item{padding:10px;border-radius:10px;background:#fafcff;border-left:6px solid var(--accent);margin-top:8px;color:#083344}
+    .disease-cat{margin-top:12px;padding:10px;border-radius:10px;background:#fff7f6;border-left:6px solid #f97373;color:#4c1f1f}
+    .disease-item{display:flex;justify-content:space-between;gap:12px;padding:8px;border-radius:8px;background:transparent;margin-top:8px}
+    .badge{padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px}
+    .badge.low{background:rgba(16,185,129,0.12);color:var(--good);border:1px solid rgba(16,185,129,0.18)}
+    .badge.moderate{background:rgba(245,158,11,0.12);color:var(--warn);border:1px solid rgba(245,158,11,0.14)}
+    .badge.high{background:rgba(239,68,68,0.12);color:var(--bad);border:1px solid rgba(239,68,68,0.12)}
+
+    .history{margin-top:12px}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;text-align:left;border-bottom:1px solid #eef3f8;font-size:13px}
+
+    .disclaimer{font-size:13px;color:var(--muted);margin-top:12px;padding:12px;background:#fff9eb;border-radius:10px;border-left:6px solid #f59e0b}
+
+    .person-wrap{
+      width:120px;min-width:120px;height:220px;
+      display:flex;align-items:center;justify-content:center;
+      border-radius:12px;background:linear-gradient(180deg,#ffffff,#f8fafc);
+      border:1px solid #eef3f8;
+    }
+    .person{
+      width:84px;height:164px;position:relative;
+      animation: breathe 2.8s ease-in-out infinite;
+      transform-origin:center bottom;
+    }
+    @keyframes breathe{
+      0%{ transform: scale(1) translateY(0) }
+      50%{ transform: scale(1.02) translateY(-2px) }
+      100%{ transform: scale(1) translateY(0) }
+    }
+    .p-head{
+      width:48px;height:48px;border-radius:50%;
+      background:radial-gradient(circle at 30% 30%, #fefefe, #e9eef7);
+      position:absolute;left:18px;top:0;box-shadow:inset 0 0 0 2px #e6eef8;
+    }
+    .p-body{
+      width:84px;height:110px;border-radius:40px;
+      background:linear-gradient(135deg, rgba(37,99,235,0.10), rgba(14,165,164,0.10));
+      position:absolute;left:0;top:44px;border:1px solid #e6eef8;
+    }
+    .p-heart{
+      width:12px;height:12px;border-radius:50%;
+      background:#ef4444;position:absolute;left:36px;top:86px;
+      animation: pulse 1.4s ease-in-out infinite;
+      box-shadow:0 0 0 0 rgba(239,68,68,0.45);
+    }
+    @keyframes pulse{
+      0%{transform:scale(1); box-shadow:0 0 0 0 rgba(239,68,68,0.45)}
+      70%{transform:scale(1.15); box-shadow:0 0 0 8px rgba(239,68,68,0)}
+      100%{transform:scale(1); box-shadow:0 0 0 0 rgba(239,68,68,0)}
+    }
+
+    .chart-wrap{
+      width:100%;
+      padding:12px;
+      border:1px solid #eef3f8;
+      border-radius:12px;
+      background:#fff;
+    }
+    .chart-meta{
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between;margin-bottom:8px
+    }
+    .chip{
+      font-size:12px;border:1px solid #e6eef8;border-radius:999px;padding:6px 10px;color:var(--muted);background:#fafcff
+    }
+    .chart-legend{
+      display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted)
+    }
+    .legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+
+    /* small responsive tweaks for login area to overlay properly */
+    .top-login-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+    .user-welcome{font-size:13px;color:#334155}
+    .logout-btn{background:#ef4444;color:white;padding:8px 10px;border-radius:8px;border:none;cursor:pointer}
+
+  </style>
+</head>
+<body>
+  <!-- ===== Login Background & Card ===== -->
+  <div class="login-bg" id="loginBg">
+    <div class="bg-shape s1"></div>
+    <div class="bg-shape s2"></div>
+    <div class="bg-shape s3"></div>
+
+    <div class="login-wrap" id="loginCard" role="dialog" aria-labelledby="loginTitle" aria-modal="true">
+      <div class="login-logo">
+        <div class="badge">HR</div>
+        <div>
+          <h1 id="loginTitle" class="login-title">Smart HealthRisk Prediction</h1>
+          <div class="login-sub">Secure access • Local demo login</div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px">
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" type="text" placeholder="admin" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="1234" autocomplete="current-password" />
+        </div>
+
+        <div class="field" style="display:flex;gap:8px;align-items:center;justify-content:space-between">
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="remember" type="checkbox" />
+            <label for="remember" style="color:rgba(255,255,255,0.85);font-size:13px;margin:0">Remember</label>
+          </div>
+          <button class="btn-ghost" id="btnDemo" title="Fill demo credentials">Fill demo</button>
+        </div>
+
+        <div class="login-actions">
+          <button class="btn-primary" id="btnLogin">Login</button>
+          <button class="btn-ghost" id="btnCreate">Create account (local)</button>
+        </div>
+
+        <div class="small">Default demo credentials: <strong>admin / 1234</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== App container hidden until login ===== -->
+  <div id="appContainer">
+    <div style="max-width:var(--max-width);margin:8px auto 0;display:flex;justify-content:space-between;align-items:center;padding:0 18px">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="logo" style="width:48px;height:48px;border-radius:10px;">HD</div>
+        <div>
+          <div style="font-weight:800;font-size:18px">HealthDash</div>
+          <div class="small-muted">Lifestyle & Early Disease Indicators</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div id="welcomeName" class="user-welcome"></div>
+        <button id="logoutBtn" class="logout-btn">Logout</button>
+      </div>
+    </div>
+
+    <div class="app">
+      <!-- ======================== SIDEBAR ======================== -->
+      <aside class="sidebar card">
+        <div class="brand">
+          <div class="logo">HD</div>
+          <div>
+            <h3>HealthDash</h3>
+            <div class="small-muted">Lifestyle & Early Disease Indicators</div>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Main navigation">
+          <button id="navProfile" class="active" onclick="showPane('profile')">Profile & Inputs</button>
+          <button id="navAssess" onclick="showPane('assess')">Assessment</button>
+          <button id="navTrends" onclick="showPane('trends')">Trends</button>
+          <button id="navHistory" onclick="showPane('history')">History</button>
+          <button id="navResources" onclick="showPane('resources')">Resources</button>
+        </nav>
+
+        <div class="meta">
+          <div class="small-muted">Quick actions</div>
+          <div class="sidebar actions">
+            <button class="btn" onclick="saveInputs()">Save Inputs</button>
+            <button class="btn ghost" onclick="loadInputs()">Load Inputs</button>
+          </div>
+        </div>
+
+        <div class="history small-muted">
+          <div style="margin-top:12px;font-weight:700;color:#0b1724">Saved Reports</div>
+          <div id="historyList" class="small-muted">No saved reports yet.</div>
+        </div>
+      </aside>
+
+      <!-- ======================== MAIN ======================== -->
+      <main class="main">
+        <!-- ========== Pane: Profile / Inputs ========== -->
+        <section id="pane-profile" class="card">
+          <h2>Profile & Inputs</h2>
+          <div class="form-grid">
+            <div>
+              <label>Age</label>
+              <input type="number" id="age" min="0" placeholder="e.g., 28" />
+            </div>
+            <div>
+              <label>Sex</label>
+              <select id="sex">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other / Prefer not</option>
+              </select>
+            </div>
+            <div>
+              <label>BMI</label>
+              <input type="number" id="bmi" step="0.1" min="10" max="60" placeholder="22.5" />
+            </div>
+            <div>
+              <label>Smoking</label>
+              <select id="smoke">
+                <option value="none">Never</option>
+                <option value="former">Former</option>
+                <option value="current">Current</option>
+              </select>
+            </div>
+            <div>
+              <label>Alcohol (drinks/week)</label>
+              <input type="number" id="alcohol" min="0" placeholder="0" />
+            </div>
+            <div>
+              <label>Physical activity (min/week)</label>
+              <input type="number" id="activity" min="0" placeholder="150" />
+            </div>
+            <div>
+              <label>Sleep (hours/night)</label>
+              <input type="number" id="sleep" step="0.1" min="0" max="24" placeholder="7.5" />
+            </div>
+            <div>
+              <label>Diet (fruit&veg servings/day)</label>
+              <input type="number" id="diet" min="0" max="12" placeholder="5" />
+            </div>
+            <div>
+              <label>Stress level (1-5)</label>
+              <input type="number" id="stress" min="1" max="5" placeholder="3" />
+            </div>
+            <div>
+              <label>Sugary drinks / day</label>
+              <input type="number" id="sugary" min="0" max="20" placeholder="0" />
+            </div>
+            <div>
+              <label>Family history (early heart disease / diabetes)</label>
+              <select id="family">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+            <div>
+              <label>Notes (optional)</label>
+              <input id="notes" placeholder="Any context you'd like to save" />
+            </div>
+          </div>
+
+          <div class="controls">
+            <button class="btn" onclick="runAssessment()">Run Assessment</button>
+            <button class="btn ghost" onclick="resetForm()">Reset</button>
+            <button class="btn" onclick="downloadJSON()">Download Report</button>
+            <button class="btn ghost" onclick="downloadCSV()">Export CSV</button>
+          </div>
+
+          <div class="small-muted" style="margin-top:14px">
+            Tip: Fill fields and click <strong>Run Assessment</strong>. Use Save / Load to keep inputs between sessions.
+          </div>
+        </section>
+
+        <!-- ========== Pane: Assessment (Dashboard) ========== -->
+        <section id="pane-assess" class="card" style="display:none">
+          <h2>Assessment</h2>
+
+          <div class="top-row">
+            <!-- LEFT: Score, Gauge, Animated Person -->
+            <div style="flex:1" class="card">
+              <div class="score-area">
+                <!-- NEW: Animated person to the LEFT -->
+                <div class="person-wrap" aria-hidden="true" title="Wellness avatar">
+                  <div class="person">
+                    <div class="p-head"></div>
+                    <div class="p-body"></div>
+                    <div class="p-heart"></div>
+                  </div>
+                </div>
+
+                <!-- Gauge -->
+                <div class="gauge-box">
+                  <canvas id="gauge" width="200" height="200" aria-label="Risk gauge"></canvas>
+                </div>
+
+                <!-- Score details -->
+                <div class="score-details">
+                  <div id="scoreText" class="score-number">—</div>
+                  <div id="scoreCat" class="score-category small-muted">Composite lifestyle risk</div>
+
+                  <div style="margin-top:12px">
+                    <div class="small-muted">Suggested next step</div>
+                    <div id="nextStep" style="font-weight:700;margin-top:6px">
+                      Run assessment to see recommendations.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Factor contributions -->
+              <div style="margin-top:12px">
+                <div class="small-muted">Factor contributions</div>
+                <div class="factors" id="factors"></div>
+              </div>
+            </div>
+
+            <!-- RIGHT: Metrics + Recommendations -->
+            <div style="width:380px" class="card">
+              <div class="metrics">
+                <div class="metric">
+                  <div class="label">Age</div>
+                  <div id="mAge" class="value">—</div>
+                </div>
+                <div class="metric">
+                  <div class="label">BMI</div>
+                  <div id="mBMI" class="value">—</div>
+                </div>
+              </div>
+
+              <div style="margin-top:12px">
+                <h3 style="margin:0 0 10px 0">Recommendations</h3>
+                <div id="recos" class="list"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Disease groups -->
+          <div style="margin-top:18px" class="card">
+            <h3 style="margin:0 0 8px 0">Early Disease Indicators (grouped)</h3>
+            <div id="diseaseGroups"></div>
+          </div>
+
+          <div class="disclaimer">
+            <strong>Important:</strong> this tool provides educational risk indicators derived from rule-based heuristics — not a medical diagnosis. For any concerning results, book a medical appointment for clinical evaluation & testing.
+          </div>
+        </section>
+
+        <!-- ========== Pane: Trends (NEW) ========== -->
+        <section id="pane-trends" class="card" style="display:none">
+          <h2>Trends</h2>
+          <div class="chart-wrap">
+            <div class="chart-meta">
+              <div class="chip">Data: Saved Reports (auto)</div>
+              <div class="chart-legend">
+                <span class="legend-dot" style="background:#2563eb"></span> Score
+                <span style="margin-left:10px" class="legend-dot" title="Low/Moderate threshold" ></span>
+              </div>
+            </div>
+            <canvas id="trendChart" width="900" height="360" aria-label="Score trend"></canvas>
+            <div class="small-muted" style="margin-top:8px">
+              Tip: Click <strong>Save Inputs</strong> and run assessments over time. This chart updates from your local Saved Reports.
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== Pane: History ========== -->
+        <section id="pane-history" class="card" style="display:none">
+          <h2>History & Saved Reports</h2>
+          <div id="historyContainer"></div>
+        </section>
+
+        <!-- ========== Pane: Resources ========== -->
+        <section id="pane-resources" class="card" style="display:none">
+          <h2>Resources & Suggested Screenings</h2>
+          <div>
+            <p>Suggested screenings based on age and risk (general guidance):</p>
+            <ul>
+              <li><strong>Blood pressure</strong> — annually or as advised.</li>
+              <li><strong>Fasting glucose / HbA1c</strong> — if overweight/obese or family history (start earlier).</li>
+              <li><strong>Lipid profile</strong> — every 3-5 years or sooner if risk factors.</li>
+              <li><strong>Liver function tests</strong> — if heavy alcohol use or metabolic risk.</li>
+              <li><strong>Kidney function</strong> — with diabetes or hypertension risk.</li>
+              <li><strong>Smoking cessation & lung screening</strong> — discuss with clinician if heavy smoker.</li>
+              <li><strong>Mental health screening</strong> — when stress, sleep, or mood concerns exist.</li>
+            </ul>
+            <p class="small-muted">These are general suggestions. Local guidelines and individual clinical context matter.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+<script>
+/* =========================================================
+   Login / Account (local)
+   - Default: admin / 1234
+   - Create account (stored locally)
+   ========================================================= */
+const loginCard = document.getElementById('loginCard');
+const loginBg = document.getElementById('loginBg');
+const appContainer = document.getElementById('appContainer');
+const btnLogin = document.getElementById('btnLogin');
+const btnCreate = document.getElementById('btnCreate');
+const btnDemo = document.getElementById('btnDemo');
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+const rememberInput = document.getElementById('remember');
+const welcomeName = document.getElementById('welcomeName');
+const logoutBtn = document.getElementById('logoutBtn');
+
+function getStoredUsers(){
+  return JSON.parse(localStorage.getItem('hd_users') || '[]');
+}
+function saveStoredUsers(u){ localStorage.setItem('hd_users', JSON.stringify(u)); }
+
+function findUser(username){
+  const users = getStoredUsers();
+  return users.find(x => x.username === username);
+}
+
+// ensure default user exists
+(function ensureDefault(){
+  const users = getStoredUsers();
+  if(!users.find(u=>u.username==='admin')){
+    users.push({username:'admin', password:'1234'});
+    saveStoredUsers(users);
+  }
+})();
+
+btnDemo.addEventListener('click', ()=>{ usernameInput.value='admin'; passwordInput.value='1234'; });
+
+btnCreate.addEventListener('click', ()=>{
+  const u = usernameInput.value.trim();
+  const p = passwordInput.value;
+  if(!u || !p){ alert('Enter username & password to create local account'); return; }
+  const users = getStoredUsers();
+  if(findUser(u)){ alert('Username already exists locally. Choose another.'); return; }
+  users.push({username:u, password:p});
+  saveStoredUsers(users);
+  alert('Local account created. Use the credentials to login.');
+});
+
+btnLogin.addEventListener('click', ()=>{
+  const u = usernameInput.value.trim();
+  const p = passwordInput.value;
+  if(!u || !p){ alert('Please enter username and password'); return; }
+  const user = findUser(u);
+  if(!user || user.password !== p){ alert('Invalid credentials'); return; }
+  // logged in
+  localStorage.setItem('hd_current_user', JSON.stringify({username:u}));
+  if(rememberInput.checked){
+    localStorage.setItem('hd_remember', JSON.stringify({username:u,password:p}));
+  } else {
+    localStorage.removeItem('hd_remember');
+  }
+  showApp(u);
+});
+
+// auto-fill remember
+(function autofillRemember(){
+  const rem = JSON.parse(localStorage.getItem('hd_remember') || 'null');
+  if(rem){ usernameInput.value = rem.username; passwordInput.value = rem.password; rememberInput.checked = true; }
+})();
+
+logoutBtn.addEventListener('click', ()=>{
+  localStorage.removeItem('hd_current_user');
+  hideApp();
+});
+
+/* =========================================================
+   Pane routing & UI helpers (dashboard)
+   ========================================================= */
+const el = (s) => document.querySelector(s);
+function showPane(id){
+  const map = {
+    profile:'pane-profile',
+    assess:'pane-assess',
+    trends:'pane-trends',
+    history:'pane-history',
+    resources:'pane-resources'
+  };
+  const target = id.startsWith('pane-') ? id : (map[id] ?? id);
+  Object.values(map).forEach(pid=>{
+    const s = el('#'+pid);
+    if(s) s.style.display = (pid === target) ? 'block' : 'none';
+  });
+  ['navProfile','navAssess','navTrends','navHistory','navResources'].forEach(n=>{
+    const btn = el('#'+n);
+    if(!btn) return;
+    const key = n.replace('nav','').toLowerCase();
+    const paneFor = map[key];
+    btn.classList.toggle('active', paneFor === target);
+  });
+  if(target === 'pane-trends') drawTrendsChart();
+}
+
+/* =========================================================
+   Validation & Scoring (copied from your logic)
+   ========================================================= */
+function validateInputs(i){
+  const errors=[];
+  if(!(i.age>=0 && i.age<=120)) errors.push('Age must be 0–120');
+  if(!(i.bmi>=10 && i.bmi<=60)) errors.push('BMI must be 10–60');
+  if(!(i.activity>=0 && i.activity<=100000)) errors.push('Activity seems invalid');
+  if(!(i.sleep>=0 && i.sleep<=24)) errors.push('Sleep must be 0–24 hours');
+  if(!(i.diet>=0 && i.diet<=50)) errors.push('Diet servings seems invalid');
+  if(!(i.stress>=1 && i.stress<=5)) errors.push('Stress must be 1–5');
+  if(!(i.sugary>=0 && i.sugary<=50)) errors.push('Sugary drinks/day seems invalid');
+  return errors;
+}
+
+function computeScore(i){
+  let score = 0;
+  score += i.age >= 45 ? 10 : i.age >= 35 ? 5 : 0;
+  if(i.bmi >= 35) score += 16;
+  else if(i.bmi >= 30) score += 13;
+  else if(i.bmi >= 25) score += 8;
+  score += (i.smoke==='current')?18: (i.smoke==='former')?6:0;
+  score += i.alcohol > 21 ? 10 : i.alcohol > 14 ? 6 : 0;
+  score += i.activity < 60 ? 12 : i.activity < 150 ? 6 : 0;
+  score += (i.sleep <=5 || i.sleep >=11) ? 6 : (i.sleep ===6 || i.sleep ===10) ? 3 : 0;
+  score += i.diet >= 5 ? 0 : i.diet >=3 ? 4 : i.diet >=1 ? 8 : 12;
+  score += (i.stress >= 4) ? 8 : 0;
+  score += i.sugary >= 4 ? 8 : i.sugary >= 1 ? 4 : 0;
+  score += (i.family === 'yes') ? 8 : 0;
+  return Math.round(Math.min(100, score));
+}
+function getCategory(score){
+  if(score >= 66) return {label:'High', colorClass:'high', color:'#ef4444', advice:'High priority: see a clinician for evaluation.'};
+  if(score >= 33) return {label:'Moderate', colorClass:'moderate', color:'#f59e0b', advice:'Moderate risk: lifestyle changes recommended and consider screening.'};
+  return {label:'Low', colorClass:'low', color:'#16a34a', advice:'Low risk: maintain healthy habits.'};
+}
+function computeDetails(i){
+  const d = {};
+  d.age = i.age >=45 ? 10 : i.age >=35 ? 5 : 0;
+  d.bmi = i.bmi >=35 ? 16 : i.bmi >=30 ? 13 : i.bmi >=25 ? 8 : 0;
+  d.smoking = (i.smoke==='current')?18: (i.smoke==='former')?6:0;
+  d.alcohol = i.alcohol > 21 ? 10 : i.alcohol > 14 ? 6 : 0;
+  d.activity = i.activity < 60 ? 12 : i.activity < 150 ? 6 : 0;
+  d.sleep = (i.sleep <=5 || i.sleep >=11) ? 6 : (i.sleep ===6 || i.sleep ===10) ? 3 : 0;
+  d.diet = i.diet >=5 ? 0 : i.diet >=3 ? 4 : i.diet >=1 ? 8 : 12;
+  d.stress = i.stress >= 4 ? 8 : 0;
+  d.sugary = i.sugary >=4 ? 8 : i.sugary >=1 ? 4 : 0;
+  d.family = i.family === 'yes' ? 8 : 0;
+  return d;
+}
+
+/* =========================================================
+   Early disease detection (copied)
+   ========================================================= */
+function detectEarlyDiseases(i){
+  const groups = { Heart: [], Lungs: [], Metabolic: [], Liver: [], Kidney: [], Mental: [], Cancer: [], Dental: [] };
+  if(i.smoke === 'current') groups.Heart.push({text:'Smoking increases risk of coronary artery disease & stroke.', level:'high'});
+  if(i.bmi >= 30) groups.Heart.push({text:'Obesity increases risk of hypertension and heart disease.', level:'high'});
+  if(i.alcohol > 14) groups.Heart.push({text:'Regular heavy alcohol raises blood pressure and heart risk.', level:'moderate'});
+  if(i.stress >= 4) groups.Heart.push({text:'Chronic stress linked to higher hypertension risk.', level:'moderate'});
+  if(i.age >= 45) groups.Heart.push({text:'Age-related increased cardiovascular risk; consider screening.', level:'moderate'});
+  if(i.smoke === 'current') groups.Lungs.push({text:'High risk of COPD and lung cancer due to smoking.', level:'high'});
+  else if(i.smoke === 'former') groups.Lungs.push({text:'Former smoking still raises lung disease risk; consider periodic checks.', level:'moderate'});
+  if(i.bmi >= 30 && i.activity < 150) groups.Metabolic.push({text:'Obesity + low activity: high risk for Type 2 diabetes & metabolic syndrome.', level:'high'});
+  if(i.sugary >= 2) groups.Metabolic.push({text:'Frequent sugary drinks increase diabetes risk.', level:'moderate'});
+  if(i.family === 'yes') groups.Metabolic.push({text:'Family history suggests earlier diabetes screening.', level:'moderate'});
+  if(i.alcohol > 21) groups.Liver.push({text:'Heavy alcohol use increases risk of fatty liver and cirrhosis.', level:'high'});
+  if(i.bmi >= 30) groups.Liver.push({text:'Obesity increases risk of non-alcoholic fatty liver disease (NAFLD).', level:'moderate'});
+  if(i.bmi >= 30 || i.family === 'yes') groups.Kidney.push({text:'Risk factors (obesity/family) suggest kidney function monitoring.', level:'moderate'});
+  if(i.stress >= 4 || i.sleep <= 5) groups.Mental.push({text:'High stress / poor sleep increase risk of anxiety and depression.', level:'moderate'});
+  if(i.diet < 3) groups.Cancer.push({text:'Low fruit & veg intake linked to higher digestive cancer risk.', level:'moderate'});
+  if(i.age >= 45) groups.Cancer.push({text:'Age increases several cancer risks; follow recommended screenings.', level:'moderate'});
+  if(i.sugary >= 2) groups.Dental.push({text:'High sugary drink intake increases dental cavities and gum disease risk.', level:'low'});
+  Object.keys(groups).forEach(k=>{ if(groups[k].length === 0) delete groups[k]; });
+  return groups;
+}
+
+/* =========================================================
+   Rendering helpers (gauge, factors, recos, disease groups)
+   ========================================================= */
+function renderGauge(score){
+  const canvas = el('#gauge'); if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width; const h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+  ctx.lineWidth = 18;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.arc(w/2, h/2, Math.min(w,h)/2 - 20, Math.PI*0.8, Math.PI*0.2, false);
+  ctx.strokeStyle = '#eef5f7';
+  ctx.stroke();
+  const start = Math.PI*0.8;
+  const end = start + ( (score/100) * (Math.PI*1.4) );
+  const grad = ctx.createLinearGradient(0,0,w,0);
+  grad.addColorStop(0, '#10b981');
+  grad.addColorStop(0.5, '#f59e0b');
+  grad.addColorStop(1, '#ef4444');
+  ctx.beginPath();
+  ctx.arc(w/2, h/2, Math.min(w,h)/2 - 20, start, end, false);
+  ctx.strokeStyle = grad;
+  ctx.stroke();
+  ctx.fillStyle = '#07202b';
+  ctx.font = '20px Inter, Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText(score + ' / 100', w/2, h/2 + 6);
+}
+function renderFactors(details){
+  const container = el('#factors');
+  container.innerHTML = '';
+  const labels = {
+    age:'Age', bmi:'BMI', smoking:'Smoking', alcohol:'Alcohol', activity:'Activity',
+    sleep:'Sleep', diet:'Diet', stress:'Stress', sugary:'Sugary', family:'Family hx'
+  };
+  Object.entries(details).forEach(([k,v])=>{
+    const row = document.createElement('div'); row.className = 'factor';
+    const name = document.createElement('div'); name.className = 'factor-name'; name.textContent = labels[k] || k;
+    const right = document.createElement('div'); right.style.display='flex'; right.style.gap='12px'; right.style.alignItems='center';
+    const track = document.createElement('div'); track.className = 'progress-track';
+    const fill = document.createElement('div'); fill.className = 'progress-fill';
+    const pct = Math.min(100, Math.round((v / 18) * 100));
+    fill.style.width = pct + '%';
+    fill.style.background = v >= 12 ? 'linear-gradient(90deg,#ef4444,#e11d48)'
+                        : v >= 6  ? 'linear-gradient(90deg,#f59e0b,#f59e0b)'
+                                  : 'linear-gradient(90deg,#10b981,#10b981)';
+    track.appendChild(fill);
+    const val = document.createElement('div'); val.style.minWidth='36px'; val.style.textAlign='right'; val.textContent = v;
+    right.appendChild(track); right.appendChild(val);
+    row.appendChild(name); row.appendChild(right);
+    container.appendChild(row);
+  });
+}
+function renderRecommendations(recos){
+  const elRec = el('#recos');
+  elRec.innerHTML = '<h3 style="margin-top:0">Personalized Recommendations</h3>';
+  recos.forEach(r=>{
+    const d = document.createElement('div'); d.className='item list-item'; d.style.marginTop='8px';
+    d.innerHTML = `<div class="item-text">${r}</div>`;
+    elRec.appendChild(d);
+  });
+}
+function renderDiseaseGroups(groups){
+  const container = el('#diseaseGroups'); container.innerHTML = '';
+  if(Object.keys(groups).length === 0){
+    container.innerHTML = '<div class="reco">No early disease indicators detected based on current inputs. Maintain healthy habits and routine checkups.</div>';
+    return;
+  }
+  Object.entries(groups).forEach(([cat, items])=>{
+    const box = document.createElement('div'); box.className='disease-cat';
+    box.innerHTML = `<div style="font-weight:800">${cat}-related risks</div>`;
+    items.forEach(it=>{
+      const row = document.createElement('div'); row.className='disease-item';
+      const left = document.createElement('div'); left.textContent = it.text;
+      const right = document.createElement('div'); right.innerHTML = `<span class="badge ${it.level}">${it.level.toUpperCase()}</span>`;
+      row.appendChild(left); row.appendChild(right);
+      box.appendChild(row);
+    });
+    container.appendChild(box);
+  });
+}
+
+/* =========================================================
+   Recommendations (rule-of-thumb)
+   ========================================================= */
+function generateRecommendations(i){
+  const rec = [];
+  if(i.activity < 150) rec.push('Aim for ≥150 minutes of moderate-intensity physical activity per week (or 75 min vigorous).');
+  if(i.diet < 5) rec.push('Increase fruit & vegetable intake to 5+ servings/day; emphasize whole foods & fiber.');
+  if(i.bmi >= 25) rec.push('Work on gradual weight reduction with balanced calorie intake and consistent activity.');
+  if(i.smoke === 'current') rec.push('Seek smoking cessation support — medications and counseling increase success.');
+  if(i.alcohol > 14) rec.push('Limit alcohol consumption; consider alcohol-free days each week.');
+  if(i.sleep < 7 || i.sleep > 9) rec.push('Normalize sleep schedule toward 7–9 hours nightly; reduce screens before bed.');
+  if(i.stress >= 4) rec.push('Add daily stress-reduction: breathing, short walks, or 10 minutes mindfulness.');
+  if(i.sugary >= 1) rec.push('Replace sugary drinks with water or unsweetened alternatives.');
+  if(i.family === 'yes') rec.push('Discuss earlier screening options with your clinician due to family history.');
+  if(rec.length === 0) rec.push('You have good baseline lifestyle markers — keep up with routine checkups and healthy habits.');
+  return rec;
+}
+
+/* =========================================================
+   Save / Load / History / Export
+   ========================================================= */
+function getInputs(){
+  return {
+    ts: (new Date()).toISOString(),
+    age: Number(el('#age').value || 0),
+    sex: el('#sex').value || 'male',
+    bmi: Number(el('#bmi').value || 0),
+    smoke: el('#smoke').value || 'none',
+    alcohol: Number(el('#alcohol').value || 0),
+    activity: Number(el('#activity').value || 0),
+    sleep: Number(el('#sleep').value || 0),
+    diet: Number(el('#diet').value || 0),
+    stress: Number(el('#stress').value || 3),
+    sugary: Number(el('#sugary').value || 0),
+    family: el('#family').value || 'no',
+    notes: el('#notes').value || ''
+  };
+}
+function populateForm(i){
+  if(!i) return;
+  el('#age').value = i.age ?? '';
+  el('#sex').value = i.sex ?? 'male';
+  el('#bmi').value = i.bmi ?? '';
+  el('#smoke').value = i.smoke ?? 'none';
+  el('#alcohol').value = i.alcohol ?? '';
+  el('#activity').value = i.activity ?? '';
+  el('#sleep').value = i.sleep ?? '';
+  el('#diet').value = i.diet ?? '';
+  el('#stress').value = i.stress ?? 3;
+  el('#sugary').value = i.sugary ?? '';
+  el('#family').value = i.family ?? 'no';
+  el('#notes').value = i.notes ?? '';
+}
+function saveInputs(){
+  const i = getInputs();
+  const list = JSON.parse(localStorage.getItem('hd_reports') || '[]');
+  list.unshift(i);
+  localStorage.setItem('hd_reports', JSON.stringify(list.slice(0,20)));
+  updateHistoryUI();
+  alert('Inputs saved locally.');
+}
+function loadInputs(){
+  const raw = localStorage.getItem('hd_reports');
+  if(!raw){ alert('No saved reports found.'); return; }
+  const list = JSON.parse(raw);
+  if(list.length === 0){ alert('No saved reports found.'); return; }
+  populateForm(list[0]);
+  alert('Loaded most recent saved inputs into form.');
+}
+function updateHistoryUI(){
+  const raw = localStorage.getItem('hd_reports');
+  const container = el('#historyList');
+  const histContainer = el('#historyContainer');
+  container.innerHTML = '';
+  histContainer.innerHTML = '';
+  if(!raw){
+    container.textContent = 'No saved reports yet.';
+    histContainer.innerHTML = '<div class="small-muted">No history</div>';
+    return;
+  }
+  const list = JSON.parse(raw);
+  if(list.length === 0){
+    container.textContent = 'No saved reports yet.';
+    histContainer.innerHTML = '<div class="small-muted">No history</div>';
+    return;
+  }
+  list.slice(0,5).forEach((r)=>{
+    const btn = document.createElement('div');
+    btn.style.cursor='pointer';
+    btn.style.padding='6px 0';
+    btn.innerHTML = `<strong>${r.age}y</strong> • BMI ${r.bmi} • ${new Date(r.ts).toLocaleString()}`;
+    btn.onclick = ()=>{ populateForm(r); alert('Loaded report from '+new Date(r.ts).toLocaleString()) };
+    container.appendChild(btn);
+  });
+  let html = '<table><thead><tr><th>Date</th><th>Age</th><th>BMI</th><th>Score</th><th>Actions</th></tr></thead><tbody>';
+  list.forEach((r,idx)=>{
+    const score = computeScore(r);
+    html += `<tr>
+      <td>${new Date(r.ts).toLocaleString()}</td>
+      <td>${r.age}</td>
+      <td>${r.bmi}</td>
+      <td>${score}</td>
+      <td>
+        <button onclick="restoreFromHistory(${idx})">Load</button>
+        <button onclick="deleteHistory(${idx})">Delete</button>
+      </td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  histContainer.innerHTML = html;
+}
+function restoreFromHistory(idx){
+  const list = JSON.parse(localStorage.getItem('hd_reports') || '[]');
+  if(!list[idx]) return alert('Item not found');
+  populateForm(list[idx]);
+  showPane('profile');
+  alert('Loaded saved report');
+}
+function deleteHistory(idx){
+  let list = JSON.parse(localStorage.getItem('hd_reports') || '[]');
+  list.splice(idx,1);
+  localStorage.setItem('hd_reports', JSON.stringify(list));
+  updateHistoryUI();
+}
+function downloadJSON(){
+  const inputs = getInputs();
+  const assessment = runAssessment(true);
+  if(!assessment) return;
+  const data = {...inputs, assessment};
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download = `healthdash_report_${new Date().toISOString().slice(0,19)}.json`; a.click();
+  URL.revokeObjectURL(url);
+}
+function downloadCSV(){
+  const inputs = getInputs();
+  const assessment = runAssessment(true);
+  if(!assessment) return;
+  const keys = Object.keys({...inputs, ...assessment});
+  const values = keys.map(k => JSON.stringify((({...inputs, ...assessment})[k] ?? '')));
+  const csv = keys.join(',') + '\n' + values.join(',');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `healthdash_report_${new Date().toISOString().slice(0,19)}.csv`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* =========================================================
+   Main assessment runner
+   ========================================================= */
+function runAssessment(returnObject=false){
+  const inputs = getInputs();
+  const errs = validateInputs(inputs);
+  if(errs.length){
+    alert('Please fix:\n• ' + errs.join('\n• '));
+    return null;
+  }
+  const score = computeScore(inputs);
+  const cat = getCategory(score);
+  const details = computeDetails(inputs);
+  const recs = generateRecommendations(inputs);
+  const diseaseGroups = detectEarlyDiseases(inputs);
+
+  renderGauge(score);
+  renderFactors(details);
+  renderRecommendations(recs);
+  renderDiseaseGroups(diseaseGroups);
+
+  el('#scoreText').textContent = `${score} / 100`;
+  el('#scoreCat').textContent = `${cat.label} risk — ${cat.advice}`;
+  el('#mAge').textContent = inputs.age;
+  el('#mBMI').textContent = inputs.bmi;
+  el('#nextStep').textContent = (cat.label==='High')
+    ? 'See a clinician for further evaluation & screening.'
+    : (cat.label==='Moderate')
+      ? 'Consider targeted lifestyle changes and screening.'
+      : 'Continue regular healthy habits and periodic screening.';
+
+  localStorage.setItem('hd_last', JSON.stringify({inputs,score,details,ts:(new Date()).toISOString(),diseaseGroups}));
+
+  updateHistoryUI();
+  drawTrendsChart(true);
+
+  showPane('assess');
+
+  if(returnObject){
+    return {inputs, score, details, recs, diseaseGroups, category:cat};
+  }
+  return null;
+}
+
+/* =========================================================
+   Trends chart (canvas)
+   ========================================================= */
+function getTrendData(){
+  const raw = localStorage.getItem('hd_reports');
+  if(!raw) {
+    const demo = [
+      { ts: new Date(Date.now()-6*86400000).toISOString(), age:28, bmi:22.5, smoke:'none', alcohol:2, activity:160, sleep:7.5, diet:5, stress:2, sugary:0, family:'no' },
+      { ts: new Date(Date.now()-5*86400000).toISOString(), age:28, bmi:22.6, smoke:'none', alcohol:3, activity:140, sleep:7.2, diet:4, stress:3, sugary:1, family:'no' },
+      { ts: new Date(Date.now()-4*86400000).toISOString(), age:28, bmi:22.7, smoke:'none', alcohol:3, activity:120, sleep:7.1, diet:4, stress:3, sugary:1, family:'no' },
+      { ts: new Date(Date.now()-3*86400000).toISOString(), age:28, bmi:22.7, smoke:'none', alcohol:2, activity:150, sleep:7.4, diet:5, stress:2, sugary:0, family:'no' },
+      { ts: new Date(Date.now()-2*86400000).toISOString(), age:28, bmi:22.8, smoke:'none', alcohol:2, activity:160, sleep:7.6, diet:5, stress:2, sugary:0, family:'no' },
+      { ts: new Date(Date.now()-1*86400000).toISOString(), age:28, bmi:22.8, smoke:'none', alcohol:2, activity:170, sleep:7.8, diet:5, stress:2, sugary:0, family:'no' },
+    ];
+    return demo.map(r => ({ x: new Date(r.ts), y: computeScore(r) }));
+  }
+  const list = JSON.parse(raw);
+  return list
+    .slice(0)
+    .reverse()
+    .map(r => ({ x: new Date(r.ts), y: computeScore(r) }));
+}
+function drawTrendsChart(silent=false){
+  const canvas = el('#trendChart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const data = getTrendData();
+  if(!data.length){
+    if(!silent) alert('No data to plot yet. Save some reports!');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    return;
+  }
+  const PAD_L = 44, PAD_R = 18, PAD_T = 18, PAD_B = 40;
+  const W = canvas.width, H = canvas.height;
+  const plotW = W - PAD_L - PAD_R, plotH = H - PAD_T - PAD_B;
+  const xs = data.map(d=>d.x.getTime());
+  const ys = data.map(d=>d.y);
+  const xMin = Math.min(...xs), xMax = Math.max(...xs);
+  const yMin = 0, yMax = 100;
+  const xScale = (t)=> PAD_L + ( (t - xMin) / Math.max(1,(xMax - xMin)) ) * plotW;
+  const yScale = (v)=> PAD_T + (1 - (v - yMin) / (yMax - yMin)) * plotH;
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle = '#eef3f8';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for(let i=0;i<=5;i++){
+    const y = PAD_T + (i/5)*plotH;
+    ctx.moveTo(PAD_L, y); ctx.lineTo(W-PAD_R, y);
+  }
+  ctx.stroke();
+  ctx.strokeStyle = '#dbe6f2';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(PAD_L, PAD_T); ctx.lineTo(PAD_L, H-PAD_B);
+  ctx.moveTo(PAD_L, H-PAD_B); ctx.lineTo(W-PAD_R, H-PAD_B);
+  ctx.stroke();
+  ctx.fillStyle = '#6b7280';
+  ctx.font = '12px Inter, Arial';
+  [0,25,50,75,100].forEach(v=>{
+    const y = yScale(v);
+    ctx.fillText(v.toString(), 8, y+4);
+  });
+  const tickCount = Math.min(6, data.length);
+  for(let i=0; i<tickCount; i++){
+    const idx = Math.round(i*(data.length-1)/(tickCount-1));
+    const d = data[idx].x;
+    const lbl = d.toLocaleDateString();
+    const x = xScale(d.getTime());
+    ctx.fillText(lbl, x-24, H-PAD_B+18);
+  }
+  ctx.beginPath();
+  data.forEach((p,idx)=>{
+    const x = xScale(p.x.getTime()), y = yScale(p.y);
+    if(idx===0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  });
+  ctx.lineTo(PAD_L + plotW, H-PAD_B);
+  ctx.lineTo(PAD_L, H-PAD_B);
+  ctx.closePath();
+  const area = ctx.createLinearGradient(0, PAD_T, 0, H-PAD_B);
+  area.addColorStop(0, 'rgba(37,99,235,0.12)');
+  area.addColorStop(1, 'rgba(37,99,235,0.02)');
+  ctx.fillStyle = area;
+  ctx.fill();
+  ctx.beginPath();
+  data.forEach((p,idx)=>{
+    const x = xScale(p.x.getTime()), y = yScale(p.y);
+    if(idx===0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle = '#2563eb';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  ctx.fillStyle = '#2563eb';
+  data.forEach(p=>{
+    const x = xScale(p.x.getTime()), y = yScale(p.y);
+    ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
+  });
+}
+
+/* =========================================================
+   Boot / init (show app if already logged in)
+   ========================================================= */
+function showApp(username){
+  loginBg.style.display = 'none';
+  appContainer.style.display = 'block';
+  welcomeName.textContent = `Welcome, ${username}`;
+  updateHistoryUI();
+  const last = JSON.parse(localStorage.getItem('hd_last') || 'null');
+  if(last && last.inputs) populateForm(last.inputs);
+  showPane('profile');
+}
+function hideApp(){
+  loginBg.style.display = 'grid';
+  appContainer.style.display = 'none';
+  usernameInput.value = '';
+  passwordInput.value = '';
+  welcomeName.textContent = '';
+}
+
+(function boot(){
+  const current = JSON.parse(localStorage.getItem('hd_current_user') || 'null');
+  if(current && current.username){
+    showApp(current.username);
+  } else {
+    hideApp();
+  }
+})();
+
+// expose some functions globally for inline handlers
+window.showPane = showPane;
+window.saveInputs = saveInputs;
+window.loadInputs = loadInputs;
+window.runAssessment = runAssessment;
+window.resetForm = function(){ ['#age','#bmi','#alcohol','#activity','#sleep','#diet','#stress','#sugary','#notes'].forEach(s=>{ const x = el(s); if(x) x.value = '' }); ['#sex','#smoke','#family'].forEach(s=>{ const x = el(s); if(x) x.selectedIndex = 0 }); };
+window.downloadJSON = downloadJSON;
+window.downloadCSV = downloadCSV;
+window.restoreFromHistory = restoreFromHistory;
+window.deleteHistory = deleteHistory;
+
+/* init small UI */
+updateHistoryUI();
+
+</script>
+</body>
+<html>
