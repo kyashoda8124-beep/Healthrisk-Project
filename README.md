@@ -1,1 +1,1 @@
-# Healthrisk prediction-Project
+# Healthrisk Prediction-Project
